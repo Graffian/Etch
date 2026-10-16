@@ -40,3 +40,8 @@ func Verify(data []byte , steps []Step , root [32]byte) bool {
 	}
 	return h==root
 }
+
+// [{hash of 1 , true} , {hash of 34 , false} , {hash of 5678 , false}]
+// h has hash of 12 
+//h has hash of 1234
+//h has hash of 12345678

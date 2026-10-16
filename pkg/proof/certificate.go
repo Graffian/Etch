@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"time"
-
 	"github.com/Graffian/etch/pkg/merkle"
 )
 
@@ -69,7 +68,7 @@ func (c *Certificate) Verify() error {
 	for i,s := range c.Steps{
 		h,err := decode32(s.Hash)
 		if err!=nil{
-			return  fmt.Errorf("proof : step:%d : %w" , i , &err)
+			return  fmt.Errorf("proof : step:%d : %w" , i , err)
 		}
 		steps[i] = merkle.Step{
 			Hash : h,

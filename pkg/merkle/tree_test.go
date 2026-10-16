@@ -42,3 +42,4 @@ func TestRootChangesWhenLeafChanges(t *testing.T){
 		t.Fatal("Root should change with change in leaves")
 	}
 }
+

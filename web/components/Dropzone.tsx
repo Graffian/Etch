@@ -25,7 +25,6 @@ export function Dropzone({
   const dragDepth = useRef(0);
   const titleId = useId();
   const hintId = useId();
-  const noteId = useId();
   const [selectedFile, setSelectedFile] = useState<SelectedFile | null>(null);
   const [dragging, setDragging] = useState(false);
 
@@ -83,30 +82,29 @@ export function Dropzone({
     <section
       className={`dropzone${dragging ? " is-dragging" : ""}`}
       aria-labelledby={titleId}
-      aria-describedby={`${hintId} ${noteId}`}
+      aria-describedby={hintId}
       onDragEnter={handleDragEnter}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <div className="dropzone__copy">
-        <h3 className="dropzone__title" id={titleId}>
-          Drop a file here
-        </h3>
-        <p className="dropzone__hint" id={hintId}>
-          Or choose one from your device.
-        </p>
-      </div>
-      <div className="dropzone__actions">
+      <div className="dropzone__row">
+        <div className="dropzone__copy">
+          <h3 className="dropzone__title" id={titleId}>
+            Drop a file here
+          </h3>
+          <p className="dropzone__hint" id={hintId}>
+            Drag it in, or choose one from your device — any file type.
+          </p>
+        </div>
         <button
           className="button button--primary"
           type="button"
           onClick={openPicker}
           disabled={disabled}
         >
-          {selectedFile ? "Choose a different file" : "Choose a file"}
+          {selectedFile ? "Choose another file" : "Choose a file"}
         </button>
-        <span className="dropzone__input-note">Any file type</span>
       </div>
       <input
         ref={inputRef}
@@ -126,18 +124,17 @@ export function Dropzone({
       >
         {selectedFile ? (
           <>
-            <span className="dropzone__status-label">Selected file</span>
             <span className="dropzone__file">{selectedFile.name}</span>
             <span className="dropzone__size">
               {formatBytes(selectedFile.size)}
             </span>
           </>
         ) : (
-          <span className="dropzone__status-label">No file selected</span>
+          <span className="dropzone__note">No file selected</span>
         )}
       </div>
-      <p className="dropzone__note" id={noteId}>
-        The file stays on your device. Etch only uses its SHA-256 fingerprint.
+      <p className="dropzone__note">
+        The file never leaves your device — Etch only sends its SHA-256.
       </p>
     </section>
   );

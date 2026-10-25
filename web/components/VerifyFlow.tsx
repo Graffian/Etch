@@ -319,7 +319,7 @@ export function VerifyFlow() {
           digest while its anchor is missing, and Etch won&apos;t blur those into
           one badge.
         </p>
-        <ul className="how__list">
+        <ul className="how__list how__list--grid">
           <li>
             <strong>File</strong>
             <p>

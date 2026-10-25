@@ -9,6 +9,7 @@ import { digestFile } from "@/lib/hash";
 import { Certificate as CertificateCard } from "./Certificate";
 import { Dropzone } from "./Dropzone";
 import { MerkleViz } from "./MerkleViz";
+import { SampleCertificate } from "./SampleCertificate";
 import { StatusMessage } from "./StatusMessage";
 
 const POLL_INTERVAL_MS = 2000;
@@ -110,12 +111,17 @@ export function TimestampFlow() {
 
   return (
     <>
-      <div className="hero">
-        <h1>Prove a file existed by a date.</h1>
-        <p className="lede">
-          Etch hashes the file in your browser, anchors the fingerprint through
-          your server, and hands you a certificate you can verify any time.
-        </p>
+      <div className="hero hero--split">
+        <div className="hero__copy">
+          <h1>Prove a file existed by a date.</h1>
+          <p className="lede">
+            Etch hashes the file in your browser, anchors the fingerprint through
+            your server, and hands you a certificate you can verify any time.
+          </p>
+        </div>
+        <div className="hero__figure">
+          <SampleCertificate />
+        </div>
       </div>
 
       <Dropzone onFileSelect={handleFile} />

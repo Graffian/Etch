@@ -11,14 +11,12 @@ type AppShellProps = {
 };
 
 const NAV_ITEMS = [
-  { href: "/", label: "Timestamp" },
+  { href: "/timestamp", label: "Timestamp" },
   { href: "/verify", label: "Verify" },
 ] as const;
 
 function isCurrentPath(pathname: string, href: string): boolean {
-  return href === "/"
-    ? pathname === "/"
-    : pathname === href || pathname.startsWith(`${href}/`);
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export function AppShell({ children }: AppShellProps) {

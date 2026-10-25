@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Archivo, JetBrains_Mono } from "next/font/google";
 
-import { AppShell } from "@/components/AppShell";
-
 import "./globals.css";
 
 const archivo = Archivo({
@@ -19,17 +17,15 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Etch — File timestamping & proof",
+  title: "Etch — Prove a file existed",
   description:
-    "Drop a file, anchor its SHA-256 fingerprint, and get a tamper-evident certificate proving it existed unchanged by a date.",
+    "Hash a file in your browser, anchor it to Ethereum, and get a tamper-evident certificate proving it existed unchanged by a date.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${archivo.variable} ${jetbrains.variable}`}>
-      <body>
-        <AppShell>{children}</AppShell>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

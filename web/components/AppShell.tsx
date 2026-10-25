@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
+import { Logo } from "./Logo";
+
 type AppShellProps = {
   children: ReactNode;
 };
@@ -30,9 +32,7 @@ export function AppShell({ children }: AppShellProps) {
       <header className="site-header">
         <div className="site-header__inner">
           <Link className="brand" href="/" aria-label="Etch home">
-            <span className="brand__mark" aria-hidden="true">
-              E
-            </span>
+            <Logo />
             <span className="brand__name">Etch</span>
           </Link>
           <nav className="site-nav" aria-label="Primary">

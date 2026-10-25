@@ -8,6 +8,7 @@ import type { Certificate } from "@/lib/certificate";
 import { digestFile } from "@/lib/hash";
 import { Certificate as CertificateCard } from "./Certificate";
 import { Dropzone } from "./Dropzone";
+import { MerkleViz } from "./MerkleViz";
 import { StatusMessage } from "./StatusMessage";
 
 const POLL_INTERVAL_MS = 2000;
@@ -202,6 +203,44 @@ export function TimestampFlow() {
           <CertificateCard certificate={certificate} />
         </section>
       ) : null}
+
+      <section className="how" aria-labelledby="how-heading">
+        <div className="section-heading">
+          <h2 id="how-heading">How it works</h2>
+        </div>
+        <div className="how__grid">
+          <MerkleViz />
+          <ol className="how__steps">
+            <li>
+              <div>
+                <strong>Hash</strong>
+                <p>
+                  Etch computes the file&apos;s SHA-256 in your browser. The file
+                  never leaves your device.
+                </p>
+              </div>
+            </li>
+            <li>
+              <div>
+                <strong>Batch</strong>
+                <p>
+                  The server groups pending hashes and combines them pairwise into
+                  one Merkle root.
+                </p>
+              </div>
+            </li>
+            <li>
+              <div>
+                <strong>Anchor</strong>
+                <p>
+                  That root is written to the chain with a block number and
+                  timestamp — your proof of existence.
+                </p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </section>
     </>
   );
 }

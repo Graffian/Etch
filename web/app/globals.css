@@ -2,37 +2,40 @@
   color-scheme: dark;
 
   /* Ground */
-  --bg: #0e1116;
-  --surface: #151a21;
-  --surface-sunken: #0a0d11;
-  --surface-hover: #1b2129;
+  --bg: #100f0d;
+  --surface: #181614;
+  --surface-sunken: #0b0a09;
+  --surface-hover: #211e1a;
 
   /* Lines */
-  --line: #232a33;
-  --line-strong: #39424f;
-  --control-border: #677280;
+  --line: #2a2621;
+  --line-strong: #3d372f;
+  --control-border: #6e655a;
 
   /* Text */
-  --text: #e6edf3;
-  --text-secondary: #9fabb9;
-  --text-muted: #7d8996;
+  --text: #ece7df;
+  --text-secondary: #a89f92;
+  --text-muted: #847d71;
 
-  /* Accent */
-  --accent: #3fb98a;
-  --accent-hover: #53c89c;
-  --accent-ink: #0b1210;
-  --accent-line: #2a6b54;
-  --accent-wash: #12271f;
+  /* Accent (brand — brass) */
+  --accent: #d9a44a;
+  --accent-hover: #e6b45e;
+  --accent-ink: #1a1208;
+  --accent-line: #6b5330;
+  --accent-wash: #241c10;
 
   /* State */
-  --info-ink: #7fc0e8;
-  --info-bg: #101a26;
-  --warning-ink: #d9a13b;
-  --warning-bg: #271f10;
+  --success: #58bf8b;
+  --success-line: #2e5c46;
+  --success-wash: #12211a;
+  --info-ink: #6fb0d9;
+  --info-bg: #101820;
+  --warning-ink: #e08a3c;
+  --warning-bg: #241a10;
   --error-ink: #e05b5b;
-  --error-bg: #271313;
+  --error-bg: #241313;
 
-  --focus: #6fc7ff;
+  --focus: #8fc9ea;
 
   --radius: 8px;
   --radius-sm: 6px;
@@ -199,19 +202,11 @@ strong {
   text-decoration: none;
 }
 
-.brand__mark {
-  display: grid;
+.logo {
   width: 1.5rem;
   height: 1.5rem;
-  place-items: center;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
   color: var(--accent);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 700;
-  line-height: 1;
+  flex: none;
 }
 
 .brand__name {
@@ -508,12 +503,12 @@ h3 {
 }
 
 .status-message--success {
-  border-color: var(--accent-line);
-  background: var(--accent-wash);
+  border-color: var(--success-line);
+  background: var(--success-wash);
 }
 
 .status-message--warning {
-  border-color: #5c4520;
+  border-color: #5c3d20;
   background: var(--warning-bg);
 }
 
@@ -720,9 +715,9 @@ h3 {
 }
 
 .check-badge--pass {
-  border-color: var(--accent-line);
-  background: var(--accent-wash);
-  color: var(--accent-hover);
+  border-color: var(--success-line);
+  background: var(--success-wash);
+  color: var(--success);
 }
 
 .check-badge--fail {
@@ -898,6 +893,133 @@ h3 {
   font-size: 0.875rem;
 }
 
+/* ---------- How it works ---------- */
+
+.how {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--line);
+}
+
+.how__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 2rem;
+  align-items: center;
+}
+
+.how__steps {
+  display: grid;
+  gap: 0.9rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.how__steps li {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  gap: 0.75rem;
+  counter-increment: step;
+}
+
+.how__steps li::before {
+  content: counter(step);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.how__steps strong {
+  display: block;
+  margin-bottom: 0.1rem;
+}
+
+.how__steps p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+/* ---------- Merkle visualization ---------- */
+
+.merkle-viz {
+  width: 100%;
+  height: auto;
+}
+
+.merkle-viz .edge path {
+  stroke: var(--line-strong);
+  stroke-width: 1.25;
+  fill: none;
+}
+
+.merkle-viz .node rect {
+  fill: var(--surface-sunken);
+  stroke: var(--line);
+}
+
+.merkle-viz .node .hash {
+  fill: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.merkle-viz .node--accent rect {
+  fill: var(--accent-wash);
+  stroke: var(--accent);
+}
+
+.merkle-viz .node--accent .hash {
+  fill: var(--accent-hover);
+}
+
+.merkle-viz .chain rect {
+  fill: var(--accent-wash);
+  stroke: var(--accent-line);
+}
+
+.merkle-viz .chain .chain-title {
+  fill: var(--accent-hover);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.merkle-viz .chain .chain-sub {
+  fill: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.merkle-viz .label {
+  fill: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.merkle-viz .file {
+  fill: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 11px;
+}
+
+.merkle-viz .file--accent {
+  fill: var(--accent-hover);
+}
+
+.merkle-viz .tag {
+  fill: var(--accent);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 650;
+}
+
 /* ---------- Utilities ---------- */
 
 .result-block {
@@ -921,7 +1043,8 @@ h3 {
 @media (max-width: 56rem) {
   .operate-layout,
   .verify-grid,
-  .detail-layout {
+  .detail-layout,
+  .how__grid {
     grid-template-columns: 1fr;
   }
 

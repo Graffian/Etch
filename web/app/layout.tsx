@@ -1,9 +1,22 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { Archivo, JetBrains_Mono } from "next/font/google";
 
 import { AppShell } from "@/components/AppShell";
 
 import "./globals.css";
+
+const archivo = Archivo({
+  subsets: ["latin"],
+  variable: "--font-archivo",
+  display: "swap",
+});
+
+const jetbrains = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Etch — File timestamping & proof",
@@ -13,7 +26,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${archivo.variable} ${jetbrains.variable}`}>
       <body>
         <AppShell>{children}</AppShell>
       </body>

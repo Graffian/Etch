@@ -49,10 +49,6 @@ export function AppShell({ children }: AppShellProps) {
               </Link>
             ))}
           </nav>
-          <p className="host-label">
-            <span className="host-label__dot" aria-hidden="true" />
-            SELF-HOSTED
-          </p>
         </div>
       </header>
       <main id="main-content" className="site-main" tabIndex={-1}>
@@ -61,7 +57,7 @@ export function AppShell({ children }: AppShellProps) {
       <footer className="site-footer">
         <div className="site-footer__inner">
           <p>Etch · tamper-evident file timestamping</p>
-          <p>Anchoring is provided by your Etch server (mock chain by default).</p>
+          <p>Anchoring provided by your Etch server.</p>
         </div>
       </footer>
     </div>

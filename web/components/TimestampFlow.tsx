@@ -110,89 +110,67 @@ export function TimestampFlow() {
 
   return (
     <>
-      <div className="page-intro">
-        <h1>Timestamp a file</h1>
+      <div className="hero">
+        <h1>Prove a file existed by a date.</h1>
         <p className="lede">
           Etch hashes the file in your browser, anchors the fingerprint through
-          your server, and returns a certificate you can keep and verify later.
+          your server, and hands you a certificate you can verify any time.
         </p>
       </div>
 
-      <div className="operate-layout">
-        <section className="operate-primary" aria-labelledby="select-file-heading">
-          <div className="section-heading">
-            <h2 id="select-file-heading">Choose a file</h2>
+      <Dropzone onFileSelect={handleFile} />
+
+      <div className="operate-status" aria-live="polite">
+        {stage === "hashing" && (
+          <StatusMessage tone="info" title="Hashing">
+            Computing the SHA-256 fingerprint
+            {fileName ? (
+              <>
+                {" "}
+                of <strong>{fileName}</strong>
+              </>
+            ) : null}
+            …
+          </StatusMessage>
+        )}
+        {stage === "submitting" && (
+          <StatusMessage tone="info" title="Submitting">
+            Sending the fingerprint to the Etch server.
+          </StatusMessage>
+        )}
+        {stage === "pending" && (
+          <StatusMessage tone="info" title="Waiting for anchor">
+            <span className="spinner" aria-hidden="true" /> The fingerprint is
+            queued. The server batches submissions and anchors them every few
+            seconds.
+          </StatusMessage>
+        )}
+        {stage === "timeout" && (
+          <>
+            <StatusMessage tone="warning" title="Still pending">
+              The batch hasn&apos;t anchored yet. The server anchors on a timer.
+            </StatusMessage>
+            <button
+              type="button"
+              className="button button--quiet"
+              onClick={retry}
+            >
+              Check again
+            </button>
+          </>
+        )}
+        {stage === "error" && (
+          <StatusMessage tone="error" title="Something went wrong">
+            {error}
+          </StatusMessage>
+        )}
+
+        {digest ? (
+          <div className="digest-block">
+            <p className="field__label">SHA-256 fingerprint</p>
+            <code className="hash hash--block">{digest}</code>
           </div>
-          <Dropzone onFileSelect={handleFile} />
-        </section>
-
-        <aside className="operate-aside" aria-labelledby="status-heading">
-          <h2 id="status-heading">Status</h2>
-
-          {stage === "idle" && (
-            <StatusMessage tone="info" title="Ready">
-              Select a file to begin. Hashing happens locally; the file itself never
-              leaves your device.
-            </StatusMessage>
-          )}
-          {stage === "hashing" && (
-            <StatusMessage tone="info" title="Hashing">
-              Computing the SHA-256 fingerprint
-              {fileName ? (
-                <>
-                  {" "}
-                  of <strong>{fileName}</strong>
-                </>
-              ) : null}
-              …
-            </StatusMessage>
-          )}
-          {stage === "submitting" && (
-            <StatusMessage tone="info" title="Submitting">
-              Sending the fingerprint to the Etch server.
-            </StatusMessage>
-          )}
-          {stage === "pending" && (
-            <StatusMessage tone="info" title="Waiting for anchor">
-              <span className="spinner" aria-hidden="true" /> The fingerprint is
-              queued. The server batches submissions and anchors them every few
-              seconds.
-            </StatusMessage>
-          )}
-          {stage === "timeout" && (
-            <>
-              <StatusMessage tone="warning" title="Still pending">
-                The batch hasn&apos;t anchored yet. The server anchors on a timer,
-                so this can take a moment longer than usual.
-              </StatusMessage>
-              <button
-                type="button"
-                className="button button--quiet"
-                onClick={retry}
-              >
-                Check again
-              </button>
-            </>
-          )}
-          {stage === "error" && (
-            <StatusMessage tone="error" title="Something went wrong">
-              {error}
-            </StatusMessage>
-          )}
-
-          {digest ? (
-            <div className="digest-block">
-              <p className="field__label">SHA-256 fingerprint</p>
-              <code className="hash hash--block">{digest}</code>
-            </div>
-          ) : null}
-
-          <p className="link-row">
-            <Link className="text-link" href="/verify">
-              Verify a file against its certificate
-            </Link>
-          </p>
-        </aside>
+        ) : null}
       </div>
 
       {certificate ? (
@@ -208,39 +186,26 @@ export function TimestampFlow() {
         <div className="section-heading">
           <h2 id="how-heading">How it works</h2>
         </div>
-        <div className="how__grid">
+        <p className="how__lead">
+          Every file becomes a leaf in a Merkle tree. Your digest is combined
+          with the rest of the batch until a single root remains, and that root
+          is what gets written to the chain. Change one byte and the whole path
+          breaks.
+        </p>
+        <div className="how__viz">
           <MerkleViz />
-          <ol className="how__steps">
-            <li>
-              <div>
-                <strong>Hash</strong>
-                <p>
-                  Etch computes the file&apos;s SHA-256 in your browser. The file
-                  never leaves your device.
-                </p>
-              </div>
-            </li>
-            <li>
-              <div>
-                <strong>Batch</strong>
-                <p>
-                  The server groups pending hashes and combines them pairwise into
-                  one Merkle root.
-                </p>
-              </div>
-            </li>
-            <li>
-              <div>
-                <strong>Anchor</strong>
-                <p>
-                  That root is written to the chain with a block number and
-                  timestamp — your proof of existence.
-                </p>
-              </div>
-            </li>
-          </ol>
         </div>
+        <p className="how__caption">
+          Four hashes roll up into one root. The highlighted leaf is yours — the
+          certificate is the path from that leaf to the root.
+        </p>
       </section>
+
+      <p className="link-row">
+        <Link className="text-link" href="/verify">
+          Verify a file against its certificate →
+        </Link>
+      </p>
     </>
   );
 }

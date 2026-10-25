@@ -1,0 +1,11 @@
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# local agent/tooling state
+.omh/
+
+# environment files (may contain secrets)
+.env
+.env.local

@@ -309,6 +309,37 @@ export function VerifyFlow() {
           </dl>
         </section>
       ) : null}
+
+      <section className="how" aria-labelledby="verify-how-heading">
+        <div className="section-heading">
+          <h2 id="verify-how-heading">What verification checks</h2>
+        </div>
+        <p className="how__lead">
+          Verification answers three questions separately — a file can match its
+          digest while its anchor is missing, and Etch won&apos;t blur those into
+          one badge.
+        </p>
+        <ul className="how__list">
+          <li>
+            <strong>File</strong>
+            <p>
+              Recomputes the file&apos;s SHA-256 and compares it to the
+              certificate&apos;s digest.
+            </p>
+          </li>
+          <li>
+            <strong>Proof</strong>
+            <p>
+              Walks the Merkle steps to confirm they reconstruct the declared
+              root.
+            </p>
+          </li>
+          <li>
+            <strong>Anchor</strong>
+            <p>Asks the server whether that root is actually on the chain.</p>
+          </li>
+        </ul>
+      </section>
     </>
   );
 }

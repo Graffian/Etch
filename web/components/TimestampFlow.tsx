@@ -189,16 +189,40 @@ export function TimestampFlow() {
         <p className="how__lead">
           Every file becomes a leaf in a Merkle tree. Your digest is combined
           with the rest of the batch until a single root remains, and that root
-          is what gets written to the chain. Change one byte and the whole path
-          breaks.
+          is written to the chain. Change one byte and the whole path breaks.
         </p>
-        <div className="how__viz">
-          <MerkleViz />
+        <div className="how__grid">
+          <ul className="how__list">
+            <li>
+              <strong>Hash</strong>
+              <p>
+                Etch computes the file&apos;s SHA-256 in your browser. The file
+                never leaves your device.
+              </p>
+            </li>
+            <li>
+              <strong>Batch</strong>
+              <p>
+                The server groups pending hashes and combines them pairwise into
+                one Merkle root.
+              </p>
+            </li>
+            <li>
+              <strong>Anchor</strong>
+              <p>
+                That root is written to the chain with a block number and
+                timestamp — your proof of existence.
+              </p>
+            </li>
+          </ul>
+          <figure className="how__viz">
+            <MerkleViz />
+            <figcaption className="how__caption">
+              Four hashes roll up into one root. The highlighted leaf is yours —
+              the certificate is the path from that leaf to the root.
+            </figcaption>
+          </figure>
         </div>
-        <p className="how__caption">
-          Four hashes roll up into one root. The highlighted leaf is yours — the
-          certificate is the path from that leaf to the root.
-        </p>
       </section>
 
       <p className="link-row">

@@ -863,22 +863,54 @@ h3 {
 }
 
 .how__lead {
-  max-width: 58ch;
+  max-width: 62ch;
   margin-bottom: 1.75rem;
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+.how__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.how__list {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.how__list strong {
+  display: block;
+  margin-bottom: 0.15rem;
+  font-size: 1rem;
+}
+
+.how__list p {
+  margin: 0;
   color: var(--text-secondary);
 }
 
 .how__viz {
-  padding: 1.5rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
+  margin: 0;
+  max-width: 500px;
+  justify-self: center;
 }
 
 .how__caption {
-  margin: 1rem 0 0;
+  margin: 0.9rem 0 0;
   color: var(--text-muted);
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 56rem) {
+  .how__grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ---------- Merkle visualization ---------- */
@@ -902,7 +934,7 @@ h3 {
 .merkle-viz .node .hash {
   fill: var(--text-secondary);
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .merkle-viz .node--accent rect {
@@ -922,28 +954,28 @@ h3 {
 .merkle-viz .chain .chain-title {
   fill: var(--accent-hover);
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
 }
 
 .merkle-viz .chain .chain-sub {
   fill: var(--text-muted);
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .merkle-viz .label {
   fill: var(--text-muted);
   font-family: var(--font-ui);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
 }
 
 .merkle-viz .file {
   fill: var(--text-muted);
   font-family: var(--font-ui);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .merkle-viz .file--accent {
@@ -953,7 +985,7 @@ h3 {
 .merkle-viz .tag {
   fill: var(--accent);
   font-family: var(--font-ui);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 650;
 }
 

@@ -30,28 +30,28 @@ function contrastRatio(foreground, background) {
   );
 }
 
-test("muted text meets WCAG AA contrast on the paper surface", () => {
-  const paper = cssToken("paper");
-  const muted = cssToken("ink-muted");
-  assert.ok(paper && muted, "paper and muted text tokens must be defined");
+test("muted text meets WCAG AA contrast on the background", () => {
+  const bg = cssToken("bg");
+  const muted = cssToken("text-muted");
+  assert.ok(bg && muted, "bg and text-muted tokens must be defined");
 
-  const ratio = contrastRatio(muted, paper);
+  const ratio = contrastRatio(muted, bg);
   assert.ok(
     ratio >= 4.5,
-    `--ink-muted ${muted} has only ${ratio.toFixed(2)}:1 contrast on --paper ${paper}`
+    `--text-muted ${muted} has only ${ratio.toFixed(2)}:1 contrast on --bg ${bg}`
   );
 });
 
-test("interactive control border has at least 3:1 contrast on raised surface", () => {
-  const raised = cssToken("paper-raised");
+test("interactive control border has at least 3:1 contrast on surface", () => {
+  const surface = cssToken("surface");
   const border = cssToken("control-border");
-  assert.ok(raised, "--paper-raised must be defined");
+  assert.ok(surface, "--surface must be defined");
   assert.ok(border, "--control-border must be defined");
 
-  const ratio = contrastRatio(border, raised);
+  const ratio = contrastRatio(border, surface);
   assert.ok(
     ratio >= 3,
-    `--control-border ${border} has only ${ratio.toFixed(2)}:1 contrast on --paper-raised ${raised}`
+    `--control-border ${border} has only ${ratio.toFixed(2)}:1 contrast on --surface ${surface}`
   );
 });
 

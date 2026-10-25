@@ -110,20 +110,17 @@ export function TimestampFlow() {
   return (
     <>
       <div className="page-intro">
-        <p className="eyebrow">Timestamp / Create</p>
-        <h1>Prove a file existed by a date.</h1>
+        <h1>Timestamp a file</h1>
         <p className="lede">
-          Choose a file and Etch computes its SHA-256 fingerprint in your browser,
-          then anchors that fingerprint through your server. You get back a
-          certificate you can keep and verify any time.
+          Etch hashes the file in your browser, anchors the fingerprint through
+          your server, and returns a certificate you can keep and verify later.
         </p>
       </div>
 
       <div className="operate-layout">
         <section className="operate-primary" aria-labelledby="select-file-heading">
           <div className="section-heading">
-            <p className="eyebrow">Select a file</p>
-            <h2 id="select-file-heading">Anchor its fingerprint</h2>
+            <h2 id="select-file-heading">Choose a file</h2>
           </div>
           <Dropzone onFileSelect={handleFile} />
         </section>
@@ -184,7 +181,7 @@ export function TimestampFlow() {
 
           {digest ? (
             <div className="digest-block">
-              <p className="eyebrow">Fingerprint (SHA-256)</p>
+              <p className="field__label">SHA-256 fingerprint</p>
               <code className="hash hash--block">{digest}</code>
             </div>
           ) : null}
@@ -200,8 +197,7 @@ export function TimestampFlow() {
       {certificate ? (
         <section className="result-block" aria-label="Certificate">
           <div className="section-heading">
-            <p className="eyebrow">Certificate</p>
-            <h2>Keep this as proof</h2>
+            <h2>Certificate</h2>
           </div>
           <CertificateCard certificate={certificate} />
         </section>

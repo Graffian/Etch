@@ -184,21 +184,18 @@ export function VerifyFlow() {
   return (
     <>
       <div className="page-intro">
-        <p className="eyebrow">Verify / Inspect</p>
-        <h1>Check that a file is unchanged.</h1>
+        <h1>Verify a file</h1>
         <p className="lede">
           Provide the original file and its certificate. Etch checks three things
-          separately: that the file still matches its digest, that the proof
-          reconstructs the declared root, and that the root is anchored on the
-          chain.
+          separately: the file matches its digest, the proof reconstructs the
+          root, and the root is anchored.
         </p>
       </div>
 
       <div className="verify-grid">
         <section aria-labelledby="file-heading">
           <div className="section-heading">
-            <p className="eyebrow">Original file</p>
-            <h2 id="file-heading">The file to check</h2>
+            <h2 id="file-heading">Original file</h2>
           </div>
           <Dropzone onFileSelect={(f) => setFile(f)} />
           <div className="status-stack">
@@ -272,8 +269,7 @@ export function VerifyFlow() {
       {checks ? (
         <section className="verify-result" aria-label="Verification result">
           <div className="section-heading">
-            <p className="eyebrow">Result</p>
-            <h2>Three independent checks</h2>
+            <h2>Checks</h2>
           </div>
 
           {allPass ? (
@@ -300,7 +296,9 @@ export function VerifyFlow() {
             {ROWS.map((row) => (
               <div key={row.key}>
                 <dt className="verify-result__label">
-                  <span className={`check-badge check-badge--${checks[row.key].status}`}>
+                  <span
+                    className={`check-badge check-badge--${checks[row.key].status}`}
+                  >
                     {checkBadgeLabel(checks[row.key].status)}
                   </span>
                   {row.label}

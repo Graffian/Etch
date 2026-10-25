@@ -81,7 +81,6 @@ export function CertificateDetail({ hash }: { hash: string }) {
     return (
       <div className="detail-layout">
         <section className="panel canonical-panel" aria-labelledby="canonical-heading">
-          <p className="eyebrow">Canonical ID</p>
           <h2 id="canonical-heading">File digest</h2>
           <code className="hash hash--block">{hash}</code>
           <p className="canonical-note">
@@ -102,7 +101,6 @@ export function CertificateDetail({ hash }: { hash: string }) {
   return (
     <div className="detail-layout">
       <section className="panel canonical-panel" aria-labelledby="canonical-heading">
-        <p className="eyebrow">Canonical ID</p>
         <h2 id="canonical-heading">File digest</h2>
         <code className="hash hash--block">{hash}</code>
       </section>

@@ -9,3 +9,6 @@ desktop.ini
 # environment files (may contain secrets)
 .env
 .env.local
+
+# project-local agent skills (tooling, not app code)
+.agents/

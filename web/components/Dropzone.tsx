@@ -26,7 +26,6 @@ export function Dropzone({
   const titleId = useId();
   const hintId = useId();
   const noteId = useId();
-  const statusId = useId();
   const [selectedFile, setSelectedFile] = useState<SelectedFile | null>(null);
   const [dragging, setDragging] = useState(false);
 
@@ -34,7 +33,6 @@ export function Dropzone({
     if (!file || disabled) {
       return;
     }
-
     setSelectedFile({ name: file.name, size: file.size });
     onFileSelect?.(file);
   }
@@ -91,16 +89,12 @@ export function Dropzone({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <div className="dropzone__glyph" aria-hidden="true">
-        +
-      </div>
       <div className="dropzone__copy">
         <h3 className="dropzone__title" id={titleId}>
           Drop a file here
         </h3>
         <p className="dropzone__hint" id={hintId}>
-          Or choose a file from your device. The same native picker opens for
-          keyboard and screen-reader users.
+          Or choose one from your device.
         </p>
       </div>
       <div className="dropzone__actions">
@@ -126,7 +120,6 @@ export function Dropzone({
       />
       <div
         className="dropzone__status"
-        id={statusId}
         role="status"
         aria-live="polite"
         aria-atomic="true"

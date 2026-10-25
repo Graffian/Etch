@@ -20,10 +20,7 @@ export function Certificate({
         className="certificate-card certificate-card--empty"
         aria-label="Certificate record"
       >
-        <div>
-          <p className="eyebrow">Certificate</p>
-          <h2>{emptyTitle}</h2>
-        </div>
+        <h2>{emptyTitle}</h2>
         <p className="certificate-card__lead">{emptyText}</p>
         <StatusMessage tone="info" title="Nothing to show">
           No certificate was loaded, so no fields are displayed and no anchor is
@@ -55,17 +52,14 @@ export function Certificate({
   return (
     <section className="certificate-card" aria-label="Certificate record">
       <div className="certificate-card__head">
-        <div>
-          <p className="eyebrow">Certificate</p>
-          <h2>Timestamped file</h2>
-        </div>
+        <h2>Timestamped file</h2>
         <p className="certificate-card__badge">
           {anchor.chain || "unconfirmed"}
         </p>
       </div>
       <p className="certificate-card__lead">
-        This certificate binds the file&apos;s SHA-256 digest into a Merkle root
-        that the Etch server anchored on its chain.
+        Binds the file&apos;s SHA-256 digest into a Merkle root that the Etch
+        server anchored on its chain.
       </p>
       <dl className="certificate-meta">
         <div>
@@ -95,7 +89,6 @@ export function Certificate({
         </div>
       </dl>
       <div className="certificate-card__anchor">
-        <p className="eyebrow">Anchor</p>
         <h3>{anchor.chain ? `Chain · ${anchor.chain}` : "Not anchored"}</h3>
         {anchored ? (
           <dl className="certificate-meta">

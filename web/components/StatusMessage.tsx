@@ -8,13 +8,6 @@ type StatusMessageProps = {
   children: ReactNode;
 };
 
-const TONE_LABELS: Record<StatusTone, string> = {
-  info: "Info",
-  success: "Success",
-  warning: "Warning",
-  error: "Error",
-};
-
 export function StatusMessage({
   tone = "info",
   title,
@@ -25,7 +18,6 @@ export function StatusMessage({
       className={`status-message status-message--${tone}`}
       role={tone === "error" ? "alert" : "status"}
     >
-      <p className="status-message__label">{TONE_LABELS[tone]}</p>
       {title ? <p className="status-message__title">{title}</p> : null}
       <div className="status-message__body">{children}</div>
     </div>

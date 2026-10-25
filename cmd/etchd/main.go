@@ -18,55 +18,63 @@ import (
 
 func main() {
 	if err := run(); err != nil {
-		slog.Error("Etchd stopped" , "err" , err)
+		slog.Error("Etchd stopped", "err", err)
 		os.Exit(1)
 	}
 }
 
-
-func run() error{
-	cfg , err := config.Load()
-	if err !=nil{
+func run() error {
+	cfg, err := config.Load()
+	if err != nil {
 		return err
 	}
 
 	st := store.NewMemory()
-	chain := anchor.NewMock()
 
-	ctx,stop := signal.NotifyContext(context.Background() , os.Interrupt , syscall.SIGTERM)
+	var chain anchor.Anchorer = anchor.NewMock()
+	clientSign := cfg.AnchorMode == "evm"
+	if clientSign {
+		chain = anchor.NewEVM(cfg.RPCURL, cfg.Chain)
+	}
+
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	b := batcher.New(st , chain , cfg.BatchInterval)
+	b := batcher.New(st, chain, cfg.BatchInterval)
 	batcherDone := make(chan struct{})
-	go func ()  {
+	go func() {
 		defer close(batcherDone)
-		b.Run(ctx)
+		if clientSign {
+			b.RunPrepare(ctx)
+		} else {
+			b.Run(ctx)
+		}
 	}()
 
 	srv := &http.Server{
-		Addr: cfg.Addr,
-		Handler: api.Logging(api.CORS(cfg.AllowedOrigin , api.New(st , chain).Handler())),
-		ReadHeaderTimeout: 5*time.Second,
+		Addr:              cfg.Addr,
+		Handler:           api.Logging(api.CORS(cfg.AllowedOrigin, api.New(st, chain).Handler())),
+		ReadHeaderTimeout: 5 * time.Second,
 	}
 
-	serverErr := make(chan error , 1)
-	go func ()  {
-		slog.Info("Etchd listening" , "addr" , cfg.Addr , "batch_interval" , cfg.BatchInterval)
+	serverErr := make(chan error, 1)
+	go func() {
+		slog.Info("Etchd listening", "addr", cfg.Addr, "anchor_mode", cfg.AnchorMode, "batch_interval", cfg.BatchInterval)
 		serverErr <- srv.ListenAndServe()
 	}()
 
-	select{
-		case err := <- serverErr:
-			return err
-		case <- ctx.Done():
-			slog.Info("Shutting Down")
+	select {
+	case err := <-serverErr:
+		return err
+	case <-ctx.Done():
+		slog.Info("Shutting Down")
 	}
 
-	shutdownCtx , cancel := context.WithTimeout(context.Background() , 10*time.Second)
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	if err := srv.Shutdown(shutdownCtx); err !=nil{
+	if err := srv.Shutdown(shutdownCtx); err != nil {
 		return err
 	}
 	<-batcherDone
-	return  nil
+	return nil
 }

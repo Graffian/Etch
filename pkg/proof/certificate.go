@@ -34,22 +34,27 @@ type Certificate struct{
 	Anchor Anchor `json:"anchor"`
 }
 
-func New(fileHash [32]byte , index int , steps []merkle.Step, root [32]byte, anchor Anchor) *Certificate{
-	out := make([]Step , len(steps))
-	for i,s := range steps{
+func New(fileHash [32]byte, index int, steps []merkle.Step, root [32]byte, anchor Anchor) *Certificate {
+	return &Certificate{
+		Version:   Version,
+		FileHash:  hex.EncodeToString(fileHash[:]),
+		LeafIndex: index,
+		Steps:     EncodeSteps(steps),
+		Root:      hex.EncodeToString(root[:]),
+		Anchor:    anchor,
+	}
+}
+
+// EncodeSteps converts raw merkle steps into the JSON-facing step form.
+func EncodeSteps(steps []merkle.Step) []Step {
+	out := make([]Step, len(steps))
+	for i, s := range steps {
 		out[i] = Step{
 			Hash: hex.EncodeToString(s.Hash[:]),
-			Left : s.Left,
+			Left: s.Left,
 		}
 	}
-	return  &Certificate{
-		Version: Version,
-		FileHash: hex.EncodeToString(fileHash[:]),
-		LeafIndex: index,
-		Steps: out,
-		Root: hex.EncodeToString(root[:]),
-		Anchor: anchor,
-	}
+	return out
 }
 
 func (c *Certificate) Verify() error {

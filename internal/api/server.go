@@ -8,18 +8,19 @@ import (
 )
 
 type Server struct {
-	store store.Store
+	store    store.Store
 	anchorer anchor.Anchorer
 }
 
-func New(s store.Store , a anchor.Anchorer) *Server{
-	return &Server{store: s , anchorer: a}
+func New(s store.Store, a anchor.Anchorer) *Server {
+	return &Server{store: s, anchorer: a}
 }
 
-func (s *Server) Handler() http.Handler{
+func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("POST /submit" , s.handleSubmit)
-	mux.HandleFunc("GET /proof/{hash}" , s.handleProof)
-	mux.HandleFunc("POST /verify" , s.handleVerify)
+	mux.HandleFunc("POST /submit", s.handleSubmit)
+	mux.HandleFunc("GET /proof/{hash}", s.handleProof)
+	mux.HandleFunc("POST /anchor", s.handleAnchor)
+	mux.HandleFunc("POST /verify", s.handleVerify)
 	return mux
 }

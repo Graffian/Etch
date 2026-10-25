@@ -82,8 +82,12 @@ func (failingAnchor) Anchor(context.Context , [32]byte) (anchor.Reciept , error)
 	return anchor.Reciept{} , errors.New("chain down")
 }
 
-func (failingAnchor) Lookup(context.Context , string) ([32]byte , error){
-	return [32]byte{} , anchor.ErrNotFound
+func (failingAnchor) Lookup(context.Context, string) ([32]byte, error) {
+	return [32]byte{}, anchor.ErrNotFound
+}
+
+func (failingAnchor) LookupReceipt(context.Context, string) (anchor.Reciept, error) {
+	return anchor.Reciept{}, anchor.ErrNotFound
 }
 
 func TestFailedAnchorKeepsHashesPending(t *testing.T){

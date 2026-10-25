@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
-import { getProof, submitHash } from "@/lib/api";
+import { getProof, requestAnchor, submitHash } from "@/lib/api";
 import type { Certificate } from "@/lib/certificate";
 import { digestFile } from "@/lib/hash";
+import { connectWallet, ensureSepolia, signAnchor } from "@/lib/wallet";
 import { Certificate as CertificateCard } from "./Certificate";
 import { Dropzone } from "./Dropzone";
 import { MerkleViz } from "./MerkleViz";
@@ -19,7 +20,10 @@ type Stage =
   | "idle"
   | "hashing"
   | "submitting"
-  | "pending"
+  | "batching"
+  | "ready"
+  | "signing"
+  | "confirming"
   | "confirmed"
   | "timeout"
   | "error";
@@ -28,10 +32,16 @@ function toMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
+function shortAddress(account: string): string {
+  return `${account.slice(0, 6)}…${account.slice(-4)}`;
+}
+
 export function TimestampFlow() {
   const [stage, setStage] = useState<Stage>("idle");
   const [digest, setDigest] = useState<string | null>(null);
+  const [root, setRoot] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [account, setAccount] = useState<string | null>(null);
   const [certificate, setCertificate] = useState<Certificate | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pollEpoch, setPollEpoch] = useState(0);
@@ -42,6 +52,7 @@ export function TimestampFlow() {
     setCertificate(null);
     setError(null);
     setDigest(null);
+    setRoot(null);
     setFileName(file.name);
     pollCount.current = 0;
 
@@ -50,7 +61,7 @@ export function TimestampFlow() {
       setDigest(hash);
       setStage("submitting");
       await submitHash(hash);
-      setStage("pending");
+      setStage("batching");
     } catch (err) {
       setError(toMessage(err));
       setStage("error");
@@ -58,7 +69,7 @@ export function TimestampFlow() {
   }, []);
 
   useEffect(() => {
-    if (stage !== "pending" || !digest) {
+    if ((stage !== "batching" && stage !== "confirming") || !digest) {
       return;
     }
 
@@ -77,6 +88,11 @@ export function TimestampFlow() {
         if (result.kind === "confirmed") {
           setCertificate(result.certificate);
           setStage("confirmed");
+          return;
+        }
+        if (result.kind === "ready") {
+          setRoot(result.root);
+          setStage("ready");
           return;
         }
         pollCount.current += 1;
@@ -103,9 +119,46 @@ export function TimestampFlow() {
     };
   }, [stage, digest, pollEpoch]);
 
+  async function handleSignAnchor() {
+    if (!root) {
+      return;
+    }
+    setStage("signing");
+    setError(null);
+    try {
+      const acct = account ?? (await connectWallet());
+      setAccount(acct);
+      await ensureSepolia();
+      const txHash = await signAnchor(acct, root);
+
+      // The server reads the transaction from the chain, so wait for it to
+      // be mined (a Sepolia block lands every ~12s).
+      let lastErr: unknown = null;
+      for (let attempt = 0; attempt < 20; attempt += 1) {
+        try {
+          await requestAnchor(root, txHash);
+          lastErr = null;
+          break;
+        } catch (err) {
+          lastErr = err;
+          await new Promise((resolve) => setTimeout(resolve, 4000));
+        }
+      }
+      if (lastErr) {
+        throw lastErr;
+      }
+
+      pollCount.current = 0;
+      setStage("confirming");
+    } catch (err) {
+      setError(toMessage(err));
+      setStage("ready");
+    }
+  }
+
   function retry() {
     pollCount.current = 0;
-    setStage("pending");
+    setStage("batching");
     setPollEpoch((n) => n + 1);
   }
 
@@ -115,8 +168,9 @@ export function TimestampFlow() {
         <div className="hero__copy">
           <h1>Prove a file existed by a date.</h1>
           <p className="lede">
-            Etch hashes the file in your browser, anchors the fingerprint through
-            your server, and hands you a certificate you can verify any time.
+            Etch hashes the file in your browser, anchors the fingerprint to
+            Ethereum from your wallet, and hands you a certificate you can
+            verify any time.
           </p>
         </div>
         <div className="hero__figure">
@@ -144,17 +198,49 @@ export function TimestampFlow() {
             Sending the fingerprint to the Etch server.
           </StatusMessage>
         )}
-        {stage === "pending" && (
-          <StatusMessage tone="info" title="Waiting for anchor">
-            <span className="spinner" aria-hidden="true" /> The fingerprint is
-            queued. The server batches submissions and anchors them every few
-            seconds.
+        {stage === "batching" && (
+          <StatusMessage tone="info" title="Batching">
+            <span className="spinner" aria-hidden="true" /> The server is
+            grouping submissions into a Merkle tree.
+          </StatusMessage>
+        )}
+        {stage === "ready" && (
+          <>
+            <StatusMessage tone="info" title="Ready to anchor">
+              The proof is ready. Sign the anchor transaction to write the root
+              to Sepolia.
+            </StatusMessage>
+            {root ? (
+              <div className="digest-block">
+                <p className="field__label">Merkle root</p>
+                <code className="hash hash--block">{root}</code>
+              </div>
+            ) : null}
+            <button
+              type="button"
+              className="button button--primary"
+              onClick={handleSignAnchor}
+            >
+              Sign anchor with MetaMask
+            </button>
+          </>
+        )}
+        {stage === "signing" && (
+          <StatusMessage tone="info" title="Anchoring">
+            <span className="spinner" aria-hidden="true" /> Confirm the
+            transaction in MetaMask, then wait for it to be mined.
+          </StatusMessage>
+        )}
+        {stage === "confirming" && (
+          <StatusMessage tone="info" title="Confirming">
+            <span className="spinner" aria-hidden="true" /> Fetching your
+            certificate.
           </StatusMessage>
         )}
         {stage === "timeout" && (
           <>
             <StatusMessage tone="warning" title="Still pending">
-              The batch hasn&apos;t anchored yet. The server anchors on a timer.
+              The batch hasn&apos;t finalized yet.
             </StatusMessage>
             <button
               type="button"
@@ -170,6 +256,10 @@ export function TimestampFlow() {
             {error}
           </StatusMessage>
         )}
+
+        {account ? (
+          <p className="dropzone__note">Wallet: {shortAddress(account)}</p>
+        ) : null}
 
         {digest ? (
           <div className="digest-block">
@@ -195,7 +285,8 @@ export function TimestampFlow() {
         <p className="how__lead">
           Every file becomes a leaf in a Merkle tree. Your digest is combined
           with the rest of the batch until a single root remains, and that root
-          is written to the chain. Change one byte and the whole path breaks.
+          is written to the chain from your wallet. Change one byte and the
+          whole path breaks.
         </p>
         <div className="how__grid">
           <ul className="how__list">
@@ -216,8 +307,8 @@ export function TimestampFlow() {
             <li>
               <strong>Anchor</strong>
               <p>
-                That root is written to the chain with a block number and
-                timestamp — your proof of existence.
+                You sign a transaction carrying that root. It lands on Sepolia
+                with a block number and timestamp — your proof of existence.
               </p>
             </li>
           </ul>

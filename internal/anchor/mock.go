@@ -12,53 +12,62 @@ import (
 var _ Anchorer = (*Mock)(nil)
 
 type Mock struct {
-	mu sync.Mutex
-	block uint64
-	roots map[string][32]byte
+	mu       sync.Mutex
+	block    uint64
+	receipts map[string]Reciept
 }
 
-func NewMock() *Mock{
+func NewMock() *Mock {
 	return &Mock{
-		roots: make(map[string][32]byte),
+		receipts: make(map[string]Reciept),
 	}
 }
 
-func (m *Mock) Anchor(ctx context.Context , root [32]byte) (Reciept , error){
+func (m *Mock) Anchor(ctx context.Context, root [32]byte) (Reciept, error) {
 	err := ctx.Err()
-	if err != nil{
-		return Reciept{} , err
+	if err != nil {
+		return Reciept{}, err
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.block++
 
-	buf := make([]byte , 0 , 40)
+	buf := make([]byte, 0, 40)
 	buf = append(buf, root[:]...)
-	buf = binary.BigEndian.AppendUint64(buf , m.block)
+	buf = binary.BigEndian.AppendUint64(buf, m.block)
 	sum := sha256.Sum256(buf)
 	tx := "0x" + hex.EncodeToString(sum[:])
 
-	m.roots[tx] = root
-
-	return Reciept{
-		Chain: "mock",
-		TxHash: tx,
+	r := Reciept{
+		Chain:       "mock",
+		TxHash:      tx,
 		BlockNumber: m.block,
-		BlockTime: time.Now().UTC(),
-	} , nil
+		BlockTime:   time.Now().UTC(),
+		Root:        root,
+	}
+	m.receipts[tx] = r
+	return r, nil
 }
 
-func (m *Mock) Lookup(ctx context.Context , txHash string) ([32]byte , error){
+func (m *Mock) Lookup(ctx context.Context, txHash string) ([32]byte, error) {
+	r, err := m.LookupReceipt(ctx, txHash)
+	if err != nil {
+		return [32]byte{}, err
+	}
+	return r.Root, nil
+}
+
+func (m *Mock) LookupReceipt(ctx context.Context, txHash string) (Reciept, error) {
 	err := ctx.Err()
-	if err!=nil{
-		return [32]byte{} , err
+	if err != nil {
+		return Reciept{}, err
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	root,ok := m.roots[txHash]
-	if !ok{
-		return [32]byte{} , ErrNotFound
+	r, ok := m.receipts[txHash]
+	if !ok {
+		return Reciept{}, ErrNotFound
 	}
-	return root , nil
+	return r, nil
 }

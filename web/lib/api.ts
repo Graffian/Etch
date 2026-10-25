@@ -1,5 +1,5 @@
 import { parseCertificate } from "./certificate.ts";
-import type { Certificate } from "./certificate.ts";
+import type { Certificate, Step } from "./certificate.ts";
 
 export type SubmitStatus = "pending" | "confirmed";
 
@@ -10,6 +10,13 @@ export interface SubmitResponse {
 
 export type ProofState =
   | { kind: "pending"; hash: string }
+  | {
+      kind: "ready";
+      hash: string;
+      root: string;
+      leaf_index: number;
+      steps: Step[];
+    }
   | { kind: "confirmed"; certificate: Certificate };
 
 export interface VerifyResponse {
@@ -64,12 +71,22 @@ export async function submitHash(hash: string): Promise<SubmitResponse> {
 
 export async function getProof(hash: string): Promise<ProofState> {
   const response = await fetch(
-    `${API_BASE_URL}/proof/${encodeURIComponent(hash)}`
+    `${API_BASE_URL}/proof/${encodeURIComponent(hash)}`,
   );
 
   if (response.status === 202) {
-    const data = (await response.json()) as SubmitResponse;
-    return { kind: "pending", hash: data.hash };
+    const data = (await response.json()) as Record<string, unknown>;
+    if (typeof data.root === "string") {
+      const steps = Array.isArray(data.steps) ? (data.steps as Step[]) : [];
+      return {
+        kind: "ready",
+        hash: String(data.hash),
+        root: data.root,
+        leaf_index: Number(data.leaf_index),
+        steps,
+      };
+    }
+    return { kind: "pending", hash: String(data.hash) };
   }
   if (!response.ok) {
     throw new ApiError(await readError(response), response.status);
@@ -80,8 +97,23 @@ export async function getProof(hash: string): Promise<ProofState> {
   };
 }
 
+export async function requestAnchor(
+  root: string,
+  txHash: string,
+): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/anchor`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ root, tx_hash: txHash }),
+  });
+
+  if (!response.ok) {
+    throw new ApiError(await readError(response), response.status);
+  }
+}
+
 export async function verifyCertificate(
-  certificate: Certificate
+  certificate: Certificate,
 ): Promise<VerifyResponse> {
   const response = await fetch(`${API_BASE_URL}/verify`, {
     method: "POST",
